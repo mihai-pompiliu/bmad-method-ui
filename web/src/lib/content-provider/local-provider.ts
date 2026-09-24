@@ -208,6 +208,18 @@ export class LocalProvider implements ContentProvider {
     return fs.readFile(fullPath, "utf-8");
   }
 
+  async getFileModifiedAt(filePath: string): Promise<string | null> {
+    this.assertSafePath(filePath);
+
+    const fullPath = path.resolve(this.resolvedRoot, filePath);
+    const lstat = await fs.lstat(fullPath);
+    if (lstat.isSymbolicLink()) {
+      throw new Error("Symlinks are not allowed");
+    }
+    if (!lstat.isFile()) return null;
+    return lstat.mtime.toISOString();
+  }
+
   /**
    * Guard 2 — Path traversal jail.
    * Ensures the resolved path stays within resolvedRoot.
@@ -230,7 +242,10 @@ export class LocalProvider implements ContentProvider {
     }
 
     // Guard 7 — Restrict access to BMAD directories only
-    const firstSegment = filePath.split(path.sep)[0];
+    // ContentProvider paths originate from GitHub with `/`, while Windows
+    // filesystem scans return `\`. Accept either separator before enforcing
+    // the top-level BMAD allowlist.
+    const firstSegment = filePath.split(/[\\/]/)[0];
     if (!this.bmadDirs.has(firstSegment)) {
       throw new Error("Access denied: only BMAD directories are accessible");
     }

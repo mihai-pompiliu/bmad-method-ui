@@ -121,6 +121,23 @@ describe("LocalProvider", () => {
     });
   });
 
+  describe("getFileModifiedAt()", () => {
+    it("returns a timestamp for an allowed BMAD file", async () => {
+      await writeFile("_bmad-output/specs/spec-a/SPEC.md");
+      const provider = new LocalProvider(tmpDir);
+
+      const modifiedAt = await provider.getFileModifiedAt(path.join("_bmad-output", "specs", "spec-a", "SPEC.md"));
+      expect(modifiedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    });
+
+    it("keeps timestamp reads inside the BMAD directory allowlist", async () => {
+      await writeFile("outside.txt");
+      const provider = new LocalProvider(tmpDir);
+
+      await expect(provider.getFileModifiedAt("outside.txt")).rejects.toThrow("Access denied");
+    });
+  });
+
   describe("getFileContent()", () => {
     it("returns the correct file content", async () => {
       await writeFile("_bmad/hello.txt", "Hello World");

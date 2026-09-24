@@ -12,6 +12,7 @@ import { GitHubStarsButton } from "@/components/animate-ui/components/buttons/gi
 
 const routeLabels: Record<string, string> = {
   profile: "Profile",
+  features: "Фичи",
   overview: "Overview",
   epics: "Epics",
   stories: "Stories",

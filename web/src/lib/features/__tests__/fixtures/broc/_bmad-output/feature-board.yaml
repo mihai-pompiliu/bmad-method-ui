@@ -1,0 +1,28 @@
+version: 1
+order: [quote-monitoring, execution-monitoring-v1, quote-settings]
+exclude: [broc-foundation]
+defaults:
+  repos: [AndreyBorisenko87/aggr-admin]
+environments:
+  test:
+    name: "Тест · TTS2"
+  prod:
+    name: "Прод"
+    servers: []
+features:
+  quote-monitoring:
+    title: "Мониторинг котировок"
+    summary: "Доска проблемных котировок на TTS2"
+    analystVerdict: "Близко к цели, 5 доработок"
+    mockupApproval: {date: 2026-09-14, source: "UX DESIGN.md"}
+  execution-monitoring-v1:
+    title: "Мониторинг исполнения v1"
+    summary: "Сколько фактически исполнено по завершённым ордерам"
+    analystVerdict: "Код расходится с макетом"
+    mockupApproval: {date: 2026-09-14, source: "UX DESIGN.md"}
+    previousNote: "не по макету"
+  quote-settings:
+    title: "Настройка котировок"
+    summary: "Depth, наценки и MaxSpread по символам"
+    analystVerdict: "Код структурно расходится"
+    mockupApproval: {date: 2026-09-10, source: "quote-settings-ux-contract-2026-09-10.md"}

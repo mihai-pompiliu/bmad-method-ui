@@ -3,6 +3,7 @@ import type { UserOctokit } from "@/lib/github/client";
 import {
   getCachedUserRepoTree,
   getCachedUserRawContent,
+  getCachedUserFileModifiedAt,
 } from "@/lib/github/client";
 
 export class GitHubProvider implements ContentProvider {
@@ -39,6 +40,17 @@ export class GitHubProvider implements ContentProvider {
 
   async getFileContent(filePath: string): Promise<string> {
     return getCachedUserRawContent(
+      this.octokit,
+      this.userId,
+      this.owner,
+      this.repo,
+      this.branch,
+      filePath,
+    );
+  }
+
+  async getFileModifiedAt(filePath: string): Promise<string | null> {
+    return getCachedUserFileModifiedAt(
       this.octokit,
       this.userId,
       this.owner,

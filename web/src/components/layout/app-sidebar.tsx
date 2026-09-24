@@ -13,6 +13,7 @@ import {
   Map,
   BookOpen,
   FileText,
+  ListChecks,
   Shield,
   PlusIcon,
 } from "lucide-react";
@@ -47,6 +48,7 @@ interface AppSidebarProps {
 }
 
 const projectTabs = [
+  { label: "Фичи", segment: "features", icon: ListChecks },
   { label: "Overview", segment: "", icon: Eye },
   { label: "Epics", segment: "epics", icon: Map },
   { label: "Stories", segment: "stories", icon: BookOpen },

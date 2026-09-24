@@ -1,0 +1,25 @@
+version: 1
+releases:
+  - feature: quote-settings
+    component: aggr-admin
+    version: "0.6.0"
+    environment: test
+    server: tts2
+    date: 2026-09-09
+    verified: true
+    note: "Проверено после установки"
+  - feature: quote-monitoring
+    component: aggr-admin
+    version: "0.7.1"
+    environment: test
+    server: tts2
+    date: 2026-09-14
+    verified: true
+    note: "Проверено в браузере"
+  - feature: execution-monitoring-v1
+    component: aggr-admin
+    version: "candidate 20260914-180922"
+    environment: test
+    server: tts2
+    date: 2026-09-14
+    verified: true

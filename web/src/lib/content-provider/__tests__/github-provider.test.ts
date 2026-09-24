@@ -5,15 +5,18 @@ import { GitHubProvider } from "../github-provider";
 vi.mock("@/lib/github/client", () => ({
   getCachedUserRepoTree: vi.fn(),
   getCachedUserRawContent: vi.fn(),
+  getCachedUserFileModifiedAt: vi.fn(),
 }));
 
 import {
   getCachedUserRepoTree,
   getCachedUserRawContent,
+  getCachedUserFileModifiedAt,
 } from "@/lib/github/client";
 
 const mockTree = getCachedUserRepoTree as ReturnType<typeof vi.fn>;
 const mockContent = getCachedUserRawContent as ReturnType<typeof vi.fn>;
+const mockModifiedAt = getCachedUserFileModifiedAt as ReturnType<typeof vi.fn>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fakeOctokit = {} as any;
@@ -74,6 +77,23 @@ describe("GitHubProvider", () => {
       const provider = new GitHubProvider(fakeOctokit, "user1", "owner", "repo", "main");
       await expect(provider.getFileContent("missing.md")).rejects.toThrow(
         "Not Found"
+      );
+    });
+  });
+
+  describe("getFileModifiedAt()", () => {
+    it("returns a cached GitHub file timestamp", async () => {
+      mockModifiedAt.mockResolvedValue("2026-09-23T14:45:08.000Z");
+      const provider = new GitHubProvider(fakeOctokit, "user1", "owner", "repo", "main");
+
+      await expect(provider.getFileModifiedAt("path/to/SPEC.md")).resolves.toBe("2026-09-23T14:45:08.000Z");
+      expect(mockModifiedAt).toHaveBeenCalledWith(
+        fakeOctokit,
+        "user1",
+        "owner",
+        "repo",
+        "main",
+        "path/to/SPEC.md",
       );
     });
   });

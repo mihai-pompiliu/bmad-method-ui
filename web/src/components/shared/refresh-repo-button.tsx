@@ -17,6 +17,16 @@ import { refreshRepoData } from "@/actions/repo-actions";
 interface RefreshRepoButtonProps {
   owner: string;
   name: string;
+  showLabel?: boolean;
+  label?: string;
+  messages?: {
+    successTitle: string;
+    fileCount: (count: number) => string;
+    failedTitle: string;
+    rateLimited: string;
+    unknownError: string;
+    close: string;
+  };
 }
 
 function formatFileCount(count: number): string {
@@ -24,7 +34,7 @@ function formatFileCount(count: number): string {
   return `${count} BMAD file${count > 1 ? "s" : ""} detected.`;
 }
 
-export function RefreshRepoButton({ owner, name }: RefreshRepoButtonProps) {
+export function RefreshRepoButton({ owner, name, showLabel = false, label = "Refresh data", messages }: RefreshRepoButtonProps) {
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -49,7 +59,7 @@ export function RefreshRepoButton({ owner, name }: RefreshRepoButtonProps) {
         router.refresh();
       }
     } catch {
-      setResult({ success: false, error: "Unexpected error" });
+      setResult({ success: false, error: messages?.unknownError ?? "Unexpected error" });
       setDialogOpen(true);
     } finally {
       setRefreshing(false);
@@ -60,13 +70,14 @@ export function RefreshRepoButton({ owner, name }: RefreshRepoButtonProps) {
     <>
       <Button
         variant="ghost"
-        size="icon"
-        className="h-9 w-9 text-muted-foreground hover:text-foreground"
-        aria-label="Refresh data"
+        size={showLabel ? "sm" : "icon"}
+        className={showLabel ? "text-muted-foreground hover:text-foreground" : "h-9 w-9 text-muted-foreground hover:text-foreground"}
+        aria-label={label}
         onClick={handleRefresh}
         disabled={refreshing}
       >
         <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+        {showLabel && <span>{label}</span>}
       </Button>
 
       <Dialog open={dialogOpen} onOpenChange={(open) => {
@@ -78,14 +89,14 @@ export function RefreshRepoButton({ owner, name }: RefreshRepoButtonProps) {
               <DialogHeader>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-success" />
-                  <DialogTitle>Refresh successful</DialogTitle>
+                  <DialogTitle>{messages?.successTitle ?? "Refresh successful"}</DialogTitle>
                 </div>
                 <DialogDescription>
-                  {formatFileCount(result.totalFiles ?? 0)}
+                  {messages?.fileCount(result.totalFiles ?? 0) ?? formatFileCount(result.totalFiles ?? 0)}
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <Button onClick={() => setDialogOpen(false)}>OK</Button>
+                <Button onClick={() => setDialogOpen(false)}>{messages?.close ?? "OK"}</Button>
               </DialogFooter>
             </>
           ) : result?.success === false ? (
@@ -93,18 +104,18 @@ export function RefreshRepoButton({ owner, name }: RefreshRepoButtonProps) {
               <DialogHeader>
                 <div className="flex items-center gap-2">
                   <XCircle className="h-5 w-5 text-destructive" />
-                  <DialogTitle>Refresh failed</DialogTitle>
+                  <DialogTitle>{messages?.failedTitle ?? "Refresh failed"}</DialogTitle>
                 </div>
                 <DialogDescription>
                   <span role="alert">
                     {result.code === "RATE_LIMITED"
-                      ? "GitHub rate limit reached. Cached data is displayed."
-                      : result.error || "An unknown error occurred."}
+                      ? messages?.rateLimited ?? "GitHub rate limit reached. Cached data is displayed."
+                      : result.error || messages?.unknownError || "An unknown error occurred."}
                   </span>
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setDialogOpen(false)}>Close</Button>
+                <Button variant="outline" onClick={() => setDialogOpen(false)}>{messages?.close ?? "Close"}</Button>
               </DialogFooter>
             </>
           ) : null}

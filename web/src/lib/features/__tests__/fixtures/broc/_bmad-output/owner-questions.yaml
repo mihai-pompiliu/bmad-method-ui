@@ -1,0 +1,11 @@
+version: 1
+questions:
+  - id: q-lp-db
+    status: open
+    opened: 2026-09-24
+    feature: null
+    question: "Какую базу LP-каталога можно обновлять?"
+    why: "Найдена только production-копия. Без решения тестовый снимок не обновится."
+    ifYes: "Агент сделает копию и обновит указанную базу."
+    ifNo: "Работа по тестовому контуру остаётся остановленной."
+    source: implementation-artifacts/tts2-test-readiness-observation-2026-09-24.md

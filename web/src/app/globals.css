@@ -423,3 +423,85 @@
     animation: none;
     mix-blend-mode: normal;
 }
+
+/* Feature board: data-dense layout with a fixed feature column. */
+.feature-board-grid {
+    display: grid;
+    grid-template-columns: minmax(15rem, 1.35fr) repeat(8, minmax(6.5rem, 1fr)) minmax(16rem, 1.5fr);
+    min-width: 88rem;
+}
+
+.feature-board-row:hover > * {
+    background-color: color-mix(in oklch, var(--muted) 55%, transparent);
+}
+
+.feature-mobile-step-grid {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+}
+
+.feature-definition-grid {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.feature-definition-arrow {
+    display: none;
+}
+
+.feature-timeline {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+}
+
+.feature-timeline > li::after {
+    position: absolute;
+    top: 0.4375rem;
+    left: 1rem;
+    right: 0;
+    height: 1px;
+    background-color: var(--border);
+    content: "";
+}
+
+.feature-timeline > li:last-child::after {
+    display: none;
+}
+
+.feature-card-bottom {
+    display: grid;
+    gap: 1rem;
+}
+
+.feature-code-row {
+    display: grid;
+    grid-template-columns: minmax(7rem, 0.8fr) minmax(0, 1.5fr) minmax(6rem, auto);
+    gap: 0.75rem;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 0;
+}
+
+.feature-code-row:last-child {
+    border-bottom: 0;
+}
+
+@media (min-width: 64rem) {
+    .feature-definition-grid {
+        grid-template-columns: minmax(0, 1fr) 1.5rem minmax(0, 1fr) 1.5rem minmax(0, 1fr);
+        align-items: stretch;
+    }
+
+    .feature-definition-arrow {
+        display: block;
+        align-self: center;
+        justify-self: center;
+    }
+
+    .feature-card-bottom {
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    }
+}

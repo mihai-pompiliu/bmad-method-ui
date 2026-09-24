@@ -111,6 +111,29 @@ export async function getUserRawContent(
   return data.content ?? "";
 }
 
+/**
+ * Get the latest commit date touching one file. Git trees do not contain
+ * timestamps, so GitHub-backed feature boards use this only when a SPEC has
+ * no explicit `created` date.
+ */
+export async function getUserFileModifiedAt(
+  octokit: UserOctokit,
+  owner: string,
+  repo: string,
+  branch: string,
+  path: string,
+): Promise<string | null> {
+  const { data } = await octokit.rest.repos.listCommits({
+    owner,
+    repo,
+    sha: branch,
+    path,
+    per_page: 1,
+  });
+  const latest = data[0];
+  return latest?.commit.committer?.date ?? latest?.commit.author?.date ?? null;
+}
+
 // ---------------------------------------------------------------------------
 // Cached Octokit helpers (TTL 5 min / 300s)
 // ---------------------------------------------------------------------------
@@ -152,6 +175,22 @@ export function getCachedUserRawContent(
   return unstable_cache(
     () => getUserRawContent(octokit, owner, repo, branch, path),
     [`file-content`, userId, owner, repo, branch, path],
+    { revalidate: CACHE_TTL, tags: [repoTag(owner, repo), fileTag(owner, repo, path)] },
+  )();
+}
+
+/** Cached file timestamp with the same invalidation tags as file content. */
+export function getCachedUserFileModifiedAt(
+  octokit: UserOctokit,
+  userId: string,
+  owner: string,
+  repo: string,
+  branch: string,
+  path: string,
+) {
+  return unstable_cache(
+    () => getUserFileModifiedAt(octokit, owner, repo, branch, path),
+    ["file-modified-at", userId, owner, repo, branch, path],
     { revalidate: CACHE_TTL, tags: [repoTag(owner, repo), fileTag(owner, repo, path)] },
   )();
 }

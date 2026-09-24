@@ -8,6 +8,12 @@ export interface ContentProviderTree {
 export interface ContentProvider {
   getTree(): Promise<ContentProviderTree>;
   getFileContent(filePath: string): Promise<string>;
+  /**
+   * Optional file timestamp used for evidence dates when a BMAD artifact has
+   * no explicit date in its frontmatter. Implementations must preserve the
+   * same path-access restrictions as getFileContent.
+   */
+  getFileModifiedAt?(filePath: string): Promise<string | null>;
   /** Verify that the root path exists and is accessible. Throws if not. */
   validateRoot(): Promise<void>;
   /**
